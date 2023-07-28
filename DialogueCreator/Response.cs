@@ -9,16 +9,17 @@ namespace DialogueCreator
 {
     public class Response
     {
-        public Character speaker { get; set; }
-        public bool end { get; set; }
+        public Character speaker;
+        public bool end;
         //public Sound audio;      
-        public List<Question> playerResponses { get; set; } = new List<Question>();
+        public List<Question> playerResponses = new List<Question>();
         // Set this if there is the posibility of the player having no options and the dialogue does not end
-        public Response next { get; set; } = null;
-        public string action { get; set; } = "";
+        public Response next = null;
+        public string action = "";
 
-        int textIndex { get; set; }
+        int textIndex;
 
+        public Response() { }
         public Response(Character speaker, bool end, int textIndex)
         {
             this.speaker = speaker;

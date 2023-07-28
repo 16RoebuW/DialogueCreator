@@ -9,13 +9,13 @@ namespace DialogueCreator
 {
     public class Question
     {
-        public string isAvailableFunc { get; set; } = "";
+        public string isAvailableFunc = "";
+        public List<Response> responses = new List<Response>();
+        public string responseCond = "";
 
-        public List<Response> responses { get; set; } = new List<Response>();
-        public string responseCond { get; set; } = "";
+        int textIndex;
 
-        int textIndex { get; set; }
-
+        public Question() { }
         public Question(int textIndex)
         {
             this.textIndex = textIndex;

@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -81,6 +83,7 @@ namespace DialogueCreator
             File.WriteAllText(saveLocation + "npc.txt", json);*/
 
             Character npc = JsonConvert.DeserializeObject<Character>(File.ReadAllText(saveLocation + "npc.txt"), new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            Debug.Assert(ReferenceEquals(npc, npc.initialResponse.speaker));
             StartDialogue(npc);
         }
 
@@ -172,5 +175,47 @@ namespace DialogueCreator
         {
             this.BackColor = Color.Firebrick;
         }
+    }
+
+    public class MyReferenceResolver : IReferenceResolver
+    {
+        private readonly Dictionary<string, object> _referenceObjects = new Dictionary<string, object>();
+
+        // ResolveReference is called during deserialization when a reference is encountered
+        public object ResolveReference(object context, string reference)
+        {
+            // Retrieve the object corresponding to the reference
+            object obj;
+            _referenceObjects.TryGetValue(reference, out obj);
+            return obj;
+        }
+
+        // GetReference is called during serialization to get the reference identifier for an object
+        public string GetReference(object context, object value)
+        {
+            // Generate a new unique reference key
+            var key = Guid.NewGuid().ToString();
+
+            // Store the reference key and the associated object in the dictionary
+            _referenceObjects[key] = value;
+            return key;
+        }
+
+        // IsReferenced is called during serialization to check if an object has been referenced
+        public bool IsReferenced(object context, object value)
+        {
+            // Check if the object is present in the dictionary
+            return _referenceObjects.ContainsValue(value);
+        }
+
+        // AddReference is called during deserialization to add a reference to the dictionary
+        public void AddReference(object context, string reference, object value)
+        {
+            // Store the reference key and the associated object in the dictionary
+            _referenceObjects[reference] = value;
+        }
+
+        // HasReferences is used to indicate whether there are any references in the resolver
+        public bool HasReferences => _referenceObjects.Count > 0;
     }
 }
