@@ -9,16 +9,15 @@ namespace DialogueCreator
 {
     public class Response
     {
-        public Character speaker;
-        public bool end;
+        public Character speaker { get; set; }
+        public bool end { get; set; }
         //public Sound audio;      
-        public List<Question> playerResponses = new List<Question>();
+        public List<Question> playerResponses { get; set; } = new List<Question>();
         // Set this if there is the posibility of the player having no options and the dialogue does not end
-        public Response next = null;
-        public delegate void ResponseAction();
-        public ResponseAction action = null;
+        public Response next { get; set; } = null;
+        public string action { get; set; } = "";
 
-        int textIndex;
+        int textIndex { get; set; }
 
         public Response(Character speaker, bool end, int textIndex)
         {

@@ -9,14 +9,12 @@ namespace DialogueCreator
 {
     public class Question
     {
-        public delegate bool qIsAvailable();
-        public qIsAvailable isAvailable;
+        public string isAvailableFunc { get; set; } = "";
 
-        public List<Response> responses = new List<Response>();
-        public delegate int ResponseDelegate();
-        public ResponseDelegate responseCond = null;
+        public List<Response> responses { get; set; } = new List<Response>();
+        public string responseCond { get; set; } = "";
 
-        int textIndex;
+        int textIndex { get; set; }
 
         public Question(int textIndex)
         {

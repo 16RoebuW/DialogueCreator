@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,10 +18,14 @@ namespace DialogueCreator
     {
         // This will act as the DialogueManager
 
-        Character npc = new Character("Nigel Percy Cooke", "Nigel P. Cooke", "The unforgiving", Application.StartupPath + @"/Text/Nigel_Percy_Cooke.txt");
+        //Character npc = new Character("Nigel Percy Cooke", "Nigel P. Cooke", "The unforgiving", Application.StartupPath + @"/Text/Nigel_Percy_Cooke.txt");
         Button[] buttons = new Button[4];
         Question[] displayedQs = new Question[4];
-        Character lomse = new Character("lomse", "W. Lomse", "The grafted", Application.StartupPath + @"/Text/lomse.txt");
+        //Character lomse = new Character("lomse", "W. Lomse", "The grafted", Application.StartupPath + @"/Text/lomse.txt");
+        public delegate void procedures();
+        public delegate bool boolFuncs();
+        public delegate int intFuncs();
+        Dictionary<string, Delegate> delegDict = new Dictionary<string, Delegate>();
 
         string playerDialogueDir = Application.StartupPath + @"/Text/Player.txt";
         string saveLocation = Application.StartupPath + "/Saved Conversations/";
@@ -42,13 +47,20 @@ namespace DialogueCreator
                 b.Click += ClickOption;
             }
 
-            npc.initialResponse = new Response(npc, false, 0);
+            boolFuncs getSecretOption = GetSecretOption;
+            delegDict.Add("GetSecretOption", getSecretOption);
+            intFuncs chooseResponse1 = ChooseResponse1;
+            delegDict.Add("ChooseResponse1", chooseResponse1);
+            procedures makeBackRed = MakeBackRed;
+            delegDict.Add("MakeBackRed", makeBackRed);
+
+            /*npc.initialResponse = new Response(npc, false, 0);
             npc.initialResponse.playerResponses.Add(new Question(0));
             npc.initialResponse.playerResponses.Add(new Question(1));
             npc.initialResponse.playerResponses.Add(new Question(2));
             npc.initialResponse.playerResponses.Add(new Question(3));
-            npc.initialResponse.playerResponses[3].isAvailable = GetSecretOption;
-            npc.initialResponse.playerResponses[0].responseCond = ChooseResponse1;
+            npc.initialResponse.playerResponses[3].isAvailableFunc = "GetSecretOption";
+            npc.initialResponse.playerResponses[0].responseCond = "ChooseResponse1";
 
             Response boring = new Response(npc, true, 1);
             npc.initialResponse.playerResponses[0].responses.Add(boring);
@@ -62,12 +74,13 @@ namespace DialogueCreator
             special.next = lomseEnter;
             npc.initialResponse.playerResponses[0].responses.Add(special);           
             Response secret = new Response(npc, true, 5);
-            secret.action = MakeBackRed;
+            secret.action = "MakeBackRed";
             npc.initialResponse.playerResponses[3].responses.Add(secret);
 
             string json = JsonConvert.SerializeObject(npc, Formatting.Indented, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-            File.WriteAllText(saveLocation + "npc.txt", json);
+            File.WriteAllText(saveLocation + "npc.txt", json);*/
 
+            Character npc = JsonConvert.DeserializeObject<Character>(File.ReadAllText(saveLocation + "npc.txt"), new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             StartDialogue(npc);
         }
 
@@ -93,13 +106,14 @@ namespace DialogueCreator
             else
             {
                 lbxDialogue.Items.Add($"You: {question.GetText(playerDialogueDir)}");
-                if (question.responses.Count == 1) 
+                if (question.responses.Count == 1)
                 {
                     ShowResponse(question.responses[0]);
                 }
                 else
                 {
-                    ShowResponse(question.responses[question.responseCond()]);
+                    int selectedResponseIndex = (delegDict[question.responseCond] as intFuncs)();
+                    ShowResponse(question.responses[selectedResponseIndex]);
                 }
             }
         }
@@ -112,9 +126,9 @@ namespace DialogueCreator
         private void ShowResponse(Response response)
         {
             lbxDialogue.Items.Add($"{response.speaker.displayName}, \"{response.speaker.title}\": {response.GetText()}");
-            if (response.action !=  null)
+            if (response.action != "")
             {
-                response.action();
+                (delegDict[response.action] as procedures)();
             }
             if (response.end == true)
             {
@@ -130,7 +144,7 @@ namespace DialogueCreator
             int i = 0;
             foreach (Question q in response.playerResponses)
             {
-                if (q.isAvailable == null || q.isAvailable() == true)
+                if (q.isAvailableFunc == "" || (delegDict[q.isAvailableFunc] as boolFuncs)() == true)
                 {
                     buttons[i].Text = q.GetText(playerDialogueDir);
                     displayedQs[i] = q;

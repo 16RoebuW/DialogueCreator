@@ -8,12 +8,12 @@ namespace DialogueCreator
 {
     public class Character
     {
-        public string name;
-        public string displayName;
-        public string title;
+        public string name { get; set; }
+        public string displayName { get; set; }
+        public string title { get; set; }
         //public Texture2D image;
-        public string textFileDir;
-        public Response initialResponse;
+        public string textFileDir { get; set; }
+        public Response initialResponse { get; set; }
 
         public Character(string name, string displayName, string title, string textFileDir)
         {
