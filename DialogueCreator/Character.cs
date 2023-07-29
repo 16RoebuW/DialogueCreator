@@ -11,8 +11,9 @@ namespace DialogueCreator
         public string name;
         public string displayName;
         public string title;
+        public string localTexturePath;
         //public Texture2D image;
-        public string textFileDir;
+        public string localTextFilePath;
         public Response initialResponse;
 
         public Character() { }
@@ -21,7 +22,7 @@ namespace DialogueCreator
             this.name = name;
             this.displayName = displayName;
             this.title = title;
-            this.textFileDir = textFileDir;
+            this.localTextFilePath = textFileDir;
         }
     }
 }

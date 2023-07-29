@@ -20,10 +20,10 @@ namespace DialogueCreator
     {
         // This will act as the DialogueManager
 
-        //Character npc = new Character("Nigel Percy Cooke", "Nigel P. Cooke", "The unforgiving", Application.StartupPath + @"/Text/Nigel_Percy_Cooke.txt");
+        Character npc = new Character("Nigel Percy Cooke", "Nigel P. Cooke", "The unforgiving", @"Text/Nigel_Percy_Cooke.txt");
         Button[] buttons = new Button[4];
         Question[] displayedQs = new Question[4];
-        //Character lomse = new Character("lomse", "W. Lomse", "The grafted", Application.StartupPath + @"/Text/lomse.txt");
+        Character lomse = new Character("lomse", "W. Lomse", "The grafted", @"Text/lomse.txt");
         public delegate void procedures();
         public delegate bool boolFuncs();
         public delegate int intFuncs();
@@ -56,7 +56,15 @@ namespace DialogueCreator
             procedures makeBackRed = MakeBackRed;
             delegDict.Add("MakeBackRed", makeBackRed);
 
-            /*npc.initialResponse = new Response(npc, false, 0);
+            SetupTestNPCs();
+
+            //Character npc = JsonConvert.DeserializeObject<Character>(File.ReadAllText(saveLocation + "npc.txt"), new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            StartDialogue(npc);
+        }
+
+        private void SetupTestNPCs()
+        {
+            npc.initialResponse = new Response(npc, false, 0);
             npc.initialResponse.playerResponses.Add(new Question(0));
             npc.initialResponse.playerResponses.Add(new Question(1));
             npc.initialResponse.playerResponses.Add(new Question(2));
@@ -74,17 +82,13 @@ namespace DialogueCreator
             Response special = new Response(npc, false, 4);
             Response lomseEnter = new Response(lomse, true, 0);
             special.next = lomseEnter;
-            npc.initialResponse.playerResponses[0].responses.Add(special);           
+            npc.initialResponse.playerResponses[0].responses.Add(special);
             Response secret = new Response(npc, true, 5);
             secret.action = "MakeBackRed";
             npc.initialResponse.playerResponses[3].responses.Add(secret);
 
-            string json = JsonConvert.SerializeObject(npc, Formatting.Indented, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
-            File.WriteAllText(saveLocation + "npc.txt", json);*/
-
-            Character npc = JsonConvert.DeserializeObject<Character>(File.ReadAllText(saveLocation + "npc.txt"), new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            Debug.Assert(ReferenceEquals(npc, npc.initialResponse.speaker));
-            StartDialogue(npc);
+            string json = JsonConvert.SerializeObject(npc, Formatting.Indented, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            File.WriteAllText(saveLocation + "npc.txt", json);
         }
 
         private void ClickOption(object sender, EventArgs e)

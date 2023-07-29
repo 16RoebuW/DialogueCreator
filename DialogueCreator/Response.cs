@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DialogueCreator
 {
@@ -11,7 +12,8 @@ namespace DialogueCreator
     {
         public Character speaker;
         public bool end;
-        //public Sound audio;      
+        public string localAudioPath;
+        //public AudioStream audio;      
         public List<Question> playerResponses = new List<Question>();
         // Set this if there is the posibility of the player having no options and the dialogue does not end
         public Response next = null;
@@ -30,7 +32,7 @@ namespace DialogueCreator
         public string GetText()
         {
             string full = "";
-            using (TextReader reader = File.OpenText(speaker.textFileDir))
+            using (TextReader reader = File.OpenText(Application.StartupPath + "/" + speaker.localTextFilePath))
             {
                 full = reader.ReadToEnd();
             }
